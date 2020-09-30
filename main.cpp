@@ -66,6 +66,7 @@ public:
 		angle.correction();
 		degrees -= angle.degrees;
 		minutes -= angle.minutes;
+		if (degrees < 0) { degrees += 360; };
 		correction();
 	}
 	void division_num(int divider) {  // деление на число
