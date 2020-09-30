@@ -16,7 +16,7 @@ public:
 		cin >> minutes;
 		cout << endl;
 	}
-	void correction() {
+	void correction() {   // округление лишних минут до градусов при ситуации >60 минут или <0 минут
 		if (minutes >= 60) { degrees += minutes / 60; minutes %= 60; };
 		if (minutes < 0) { degrees -= 1 + (-1 * minutes / 60); minutes = 60 + minutes; };
 		if (degrees*minutes < 0) { cout << "wrong input"; };
