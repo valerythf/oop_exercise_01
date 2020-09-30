@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.16)
+project(oop_1)
+
+set(CMAKE_BUILD_TYPE 17)
+
+add_executable(oop_1 main.cpp)
