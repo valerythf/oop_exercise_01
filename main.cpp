@@ -16,7 +16,7 @@ public:
 		return minutes;
 	}
 
-	void input_angle()
+	void input_angle() //ввод угла
 	{
 		cout << "degrees:";
 		cin >> degrees;
@@ -25,16 +25,16 @@ public:
 		cout << endl;
 	}
 
-	double normalize()
+	double normalize() //приведение к десятичной форме
 	{
 		return(degrees + minutes / 60);
 	}
-	double to_radians()
+	double to_radians()  // перевод в радианы
 	{
 		return(degrees * 3.1415 / 180 + minutes * 3.1415 / 10800);
 	}
 
-	void to_360()
+	void to_360()  // приведение к диапазону 0-360
 	{
 		if (minutes < 0) {
 			degrees--;
@@ -47,7 +47,7 @@ public:
 		if (minutes >= 60) { degrees += minutes / 60;  minutes %= 60; }
 	}
 
-	void addition() {
+	void addition() {          //сложение
 		Angle angle2;
 		cout << "input angle 2: " << endl;
 		angle2.input_angle();
@@ -55,7 +55,7 @@ public:
 		minutes += angle2.get_m();
 		if (minutes >= 60) { degrees -= minutes / 60;  minutes %= 60; }
 	}
-	void subtraction() {
+	void subtraction() {     //вычитание
 		Angle angle2;
 		cout << "input angle 2: " << endl;
 		angle2.input_angle();
@@ -64,7 +64,7 @@ public:
 		if (minutes >= 60 or minutes <= -60) { degrees -= minutes / 60;  minutes %= 60; }
 		if (minutes < 0) { degrees -= 1 + (-1 * minutes / 60); minutes = 60 + minutes; };
 	}
-	void division_num() {
+	void division_num() {      // деление на число
 		int divider;
 		cout << "input divider: " << endl;
 		cin >> divider;
@@ -72,15 +72,7 @@ public:
 		minutes /= divider;
 		if (minutes >= 60) { degrees += minutes / 60;  minutes %= 60; }
 	}
-	double division_ang() {
-		Angle angle2;
-		cout << "input angle 2: " << endl;
-		angle2.input_angle();
-		double a1 = angle2.normalize();
-		double a2 = angle2.normalize();
-		return(a1 / a2);
-	}
-	friend int compare_angles(Angle a1, Angle a2)
+	friend int compare_angles(Angle a1, Angle a2)  // сравнение углов
 	{
 		double m1 = a1.normalize();
 		double m2 = a2.normalize();
@@ -88,7 +80,7 @@ public:
 		else if (m1 > m2) return 1;
 		else return 0;
 	}
-	friend double sinus(Angle a1)
+	friend double sinus(Angle a1)         // тригонометрические функцию
 	{
 		return sin(a1.to_radians());
 	}
