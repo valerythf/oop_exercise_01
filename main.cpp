@@ -8,14 +8,6 @@ private:
 	int degrees;
 	int minutes;
 public:
-	double get_d() {
-		return degrees;
-	}
-
-	double get_m() {
-		return minutes;
-	}
-
 	void input_angle() //ввод угла
 	{
 		cout << "degrees:";
@@ -24,18 +16,33 @@ public:
 		cin >> minutes;
 		cout << endl;
 	}
-
-	double normalize() //приведение к десятичной форме
-	{
-		return(degrees + minutes / 60);
+	void correction() {
+		if (minutes >= 60) { degrees += minutes / 60; minutes %= 60; };
+		if (minutes < 0) { degrees -= 1 + (-1 * minutes / 60); minutes = 60 + minutes; };
+		if (degrees*minutes < 0) { cout << "wrong input"; };
 	}
-	double to_radians()  // перевод в радианы
+	double get_d() {
+		return degrees;
+	}
+
+	double get_m() {
+		return minutes;
+	}
+
+	friend double normalize(Angle angle) //приведение к десятичной форме
 	{
-		return(degrees * 3.1415 / 180 + minutes * 3.1415 / 10800);
+		angle.correction();
+		return(angle.degrees + angle.minutes / 60);
+	}
+	friend double to_radians(Angle angle)  // перевод в радианы
+	{
+		angle.correction();
+		return(angle.degrees * 3.1415 / 180 + angle.minutes * 3.1415 / 10800);
 	}
 
 	void to_360()  // приведение к диапазону 0-360
 	{
+		correction();
 		if (minutes < 0) {
 			degrees--;
 			minutes += 60;
@@ -44,59 +51,56 @@ public:
 			degrees %= 360;
 		else
 			degrees = degrees % 360 + 360;
-		if (minutes >= 60) { degrees += minutes / 60;  minutes %= 60; }
+		correction();
 	}
 
-	void addition() {          //сложение
-		Angle angle2;
-		cout << "input angle 2: " << endl;
-		angle2.input_angle();
-		degrees += angle2.get_d();
-		minutes += angle2.get_m();
-		if (minutes >= 60) { degrees -= minutes / 60;  minutes %= 60; }
+	void addition(Angle angle) {  //сложение
+		correction();
+		angle.correction();
+		degrees += angle.degrees;
+		minutes += angle.minutes;
+		correction();
 	}
-	void subtraction() {     //вычитание
-		Angle angle2;
-		cout << "input angle 2: " << endl;
-		angle2.input_angle();
-		degrees -= angle2.get_d();
-		minutes -= angle2.get_m();
-		if (minutes >= 60 or minutes <= -60) { degrees -= minutes / 60;  minutes %= 60; }
-		if (minutes < 0) { degrees -= 1 + (-1 * minutes / 60); minutes = 60 + minutes; };
+	void subtraction(Angle angle) {  //сложение
+		correction();
+		angle.correction();
+		degrees -= angle.degrees;
+		minutes -= angle.minutes;
+		correction();
 	}
-	void division_num() {      // деление на число
-		int divider;
-		cout << "input divider: " << endl;
-		cin >> divider;
-		degrees /= divider;
-		minutes /= divider;
-		if (minutes >= 60) { degrees += minutes / 60;  minutes %= 60; }
+	void division_num(int divider) {  // деление на число
+		double new_deg, new_min;
+		new_deg = int((static_cast<double>(degrees) + static_cast<double>(minutes) / 60) / divider);
+		new_min = (static_cast<double>(degrees) + static_cast<double>(minutes) / 60) / divider - new_deg;
+		degrees = new_deg;
+		minutes = new_min * 60;
+		correction();
 	}
 	friend int compare_angles(Angle a1, Angle a2)  // сравнение углов
 	{
-		double m1 = a1.normalize();
-		double m2 = a2.normalize();
+		double m1 = normalize(a1);
+		double m2 = normalize(a2);
 		if (m1 < m2) return -1;
 		else if (m1 > m2) return 1;
 		else return 0;
 	}
 	friend double sinus(Angle a1)         // тригонометрические функцию
 	{
-		return sin(a1.to_radians());
+		return sin(to_radians(a1));
 	}
 	friend double cosinus(Angle a1)
 	{
-		return cos(a1.to_radians());
+		return cos(to_radians(a1));
 	}
 	friend double tangens(Angle a1)
 	{
-		return tan(a1.to_radians());
+		return tan(to_radians(a1));
 	}
 };
 
 int main()
 {
-	int point = 1;
+	int point = 1, divider;
 	Angle angle1, angle2;
 	cout << "Menu:\n";
 	cout << "1. Convert to radians.\n";
@@ -116,31 +120,41 @@ int main()
 		if (point == 1) {
 			cout << "input angle : \n";
 			angle1.input_angle();
-			cout << "Angle " << angle1.get_d() << " d; " << angle1.get_m() << " m;  in radians is: " << angle1.to_radians() << " rad;" << endl;
+			cout << "Angle " << angle1.get_d() << "d" << angle1.get_m() << "m  in radians is: " << to_radians(angle1) << " rad;" << endl;
 		}
 		if (point == 2) {
 			cout << "input angle : \n";
 			angle1.input_angle();
+			cout << "Angle " << angle1.get_d() << "d" << angle1.get_m() << "m  in range 0-360 is: ";
 			angle1.to_360();
-			cout << "Angle in range 0-360 is: " << angle1.get_d() << " d; " << angle1.get_m() << " m;" << endl;
+			cout << angle1.get_d() << "d" << angle1.get_m() << "m" << endl;
 		}
 		if (point == 3) {
 			cout << "input angle 1: \n";
 			angle1.input_angle();
-			angle1.addition();
-			cout << "Result of their addition is: " << angle1.get_d() << " d; " << angle1.get_m() << " m;" << endl;
+			cout << "input angle 2: \n";
+			angle2.input_angle();
+			cout << angle1.get_d() << "d" << angle1.get_m() << "m  +  " << angle2.get_d() << "d" << angle2.get_m() << "m  =  ";
+			angle1.addition(angle2);
+			cout << angle1.get_d() << "d" << angle1.get_m() << "m" << endl;
 		}
 		if (point == 4) {
 			cout << "input angle 1: \n";
 			angle1.input_angle();
-			angle1.subtraction();
-			cout << "Result of their substraction is: " << angle1.get_d() << " d; " << angle1.get_m() << " m;" << endl;
+			cout << "input angle 1: \n";
+			angle2.input_angle();
+			cout << angle1.get_d() << "d" << angle1.get_m() << "m  -  " << angle2.get_d() << "d" << angle2.get_m() << "m  =  ";
+			angle1.subtraction(angle2);
+			cout << angle1.get_d() << "d" << angle1.get_m() << "m" << endl;
 		}
 		if (point == 5) {
-			cout << "input angle 1: \n";
+			cout << "input angle : \n";
 			angle1.input_angle();
-			angle1.division_num();
-			cout << "Result of their division is: " << angle1.get_d() << " d; " << angle1.get_m() << " m;" << endl;
+			cout << "input divider: \n";
+			cin >> divider;
+			cout << angle1.get_d() << "d" << angle1.get_m() << "m  /  " << divider << " = ";
+			angle1.division_num(divider);
+			cout << angle1.get_d() << "d" << angle1.get_m() << "m" << endl;
 		}
 		if (point == 6) {
 			cout << "input angle 1: \n";
