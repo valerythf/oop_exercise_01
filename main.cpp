@@ -142,7 +142,7 @@ int main()
 		if (point == 4) {
 			cout << "input angle 1: \n";
 			angle1.input_angle();
-			cout << "input angle 1: \n";
+			cout << "input angle 2: \n";
 			angle2.input_angle();
 			cout << angle1.get_d() << "d" << angle1.get_m() << "m  -  " << angle2.get_d() << "d" << angle2.get_m() << "m  =  ";
 			angle1.subtraction(angle2);
